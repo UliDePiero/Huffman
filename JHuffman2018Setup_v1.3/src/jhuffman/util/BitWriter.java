@@ -39,7 +39,8 @@ public class BitWriter
 					{
 						writeBit(tabla.arr[i].cod.codePointAt(j)); 	//Grabo el codigo bit a bit.
 					}	
-					flush(); //Completo el byte con ceros.
+					flush(); //Completo el byte con ceros. (Como tenes la longitud del codigo, estos '0' extras no generan conflicto)
+					//aca deberia ir el byte separador pero cual seria?
 				}
 			}
 			raf2 = new RandomAccessFile(filename, "r");
@@ -54,7 +55,7 @@ public class BitWriter
 				
 				c = raf2.read();
 			}
-			flush();
+			flush();  //No genera conflicto porque se reserva el tamaño del archivo original? o del codigo de huff?
 		}
 		catch(Exception e)
 		{
@@ -142,7 +143,6 @@ public class BitWriter
 			{
 				return;
 			}
-			
 
 			// completo con ceros
 			if( sBuffer.length()>0 )

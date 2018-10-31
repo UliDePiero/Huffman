@@ -18,6 +18,7 @@ public class BitReader
 	{
 		public Integer n = 0;
 		public StringBuffer cod;
+		public Integer recorrido = 0;
 	}
 	
 	public class Table
@@ -55,20 +56,21 @@ public class BitReader
 				tabla.arr[c].n++;
 				c = raf.read();
 			}
-			raf.close();
+			//raf.close();
 		}
 		catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		close();
+		//close();
 		return tabla;
 	}
 	
 	public TreeUtil cargarArchivo() {
 		// TODO Auto-generated method stub
 		{
-			Table tabla = crearTabla();
+			//Table tabla = crearTabla();
+			Table tabla = new Table();
 			try
 			{
 				//Cargo la tabla:	
@@ -76,15 +78,18 @@ public class BitReader
 				c = raf.read(); 		//Leo que caracter es.
 				
 				while (c>=0)
-				{			
+				{	
+					tabla.arr[c].n++;
 					nCod = raf.read(); 	//Leo la longitud del codigo.
 											
 					for(int j=0; j<nCod; j++)
 					{						
 						//Leo el codigo bit a bit.
-						readBit();								
+						readBit();						//Largo de codigo es para la cantidad de veces a concatenar	//Falta poner el codigo en la tabla
+						tabla.arr[c].cod.append(sBuffer); //Grabo el codigo Huffman en la tabla
+						sBuffer="";
 					}	
-					tabla.arr[c].cod.append(sBuffer);
+					//tabla.arr[c].cod.append(sBuffer); //Grabo el codigo Huffman en la tabla
 					if (nCod%8 != 0)
 					{
 						for(int j=nCod;j<(1+nCod/8)*8;j++) //Completo la lectura del byte antes de leer el otro caracter.
@@ -92,7 +97,7 @@ public class BitReader
 							readBit();
 						}
 					}
-					c = raf.read();								
+					c = raf.read();			//Leo caracter siguiente.					
 				}			
 			}
 			catch(Exception e)
@@ -100,10 +105,10 @@ public class BitReader
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
-			close();
+			//close();
 			
 			//Creo lista:
-			SortedList<Integer> lista = new SortedList<>();
+			/*SortedList<Integer> lista = new SortedList<>();
 			Comparator<Integer> cmp = new CmpInteger();
 			for (int i=0;i<256;i++)
 			{
@@ -116,6 +121,28 @@ public class BitReader
 				int x = lista.get(i);
 				Node nodo=new Node(x,tabla.arr[i].n, aux);
 				aux = nodo;
+			}*/
+			SortedList<Integer> lista = new SortedList<>();
+			Comparator<Integer> cmp = new CmpInteger();
+			for (int i=0;i<256;i++)
+			{
+				if(tabla.arr[i].n>0){
+					lista.add(tabla.arr[i].n,cmp);
+				}
+			}
+			Node aux=null;
+			for(int i=lista.size()-1;i>=0; i--)
+			{
+				int x = lista.get(i);
+				for (int j=255;j>=0;j--)
+				{
+					if(tabla.arr[j].n==x && tabla.arr[j].recorrido==0){
+						Node nodo=new Node(j,tabla.arr[j].n, aux);
+						aux = nodo;
+						tabla.arr[j].recorrido=1;
+						break; //jejeje
+					}
+				}			
 			}
 			
 			//Armo arbol:
@@ -136,12 +163,12 @@ public class BitReader
 		return x;
 	}
 	
-	public int readBit()
+	public int readBit() //revisar //revisado
 	{
 		// programar aqui
 		try
 		{
-			if( sBuffer.length()==0 || bitNo==8 )
+			if( sBuffer.length()==0 || bitNo==8 )							//problema en segunda leida //corregido //NO TOCAR, se usa en BitWRITER.restaurar
 			{
 				int b=raf.read();
 				

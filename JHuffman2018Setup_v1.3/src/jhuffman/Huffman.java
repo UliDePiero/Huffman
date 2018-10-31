@@ -49,15 +49,23 @@ public class Huffman
 		Comparator<Integer> cmp = new CmpInteger();
 		for (int i=0;i<256;i++)
 		{
-			if(tabla.arr[i].n>0)
-				lista.add(i,cmp);
+			if(tabla.arr[i].n>0){
+				lista.add(tabla.arr[i].n,cmp);
+			}
 		}
 		Node aux=null;
 		for(int i=lista.size()-1;i>=0; i--)
 		{
 			int x = lista.get(i);
-			Node nodo=new Node(x,tabla.arr[i].n, aux);
-			aux = nodo;
+			for (int j=255;j>=0;j--)
+			{
+				if(tabla.arr[j].n==x && tabla.arr[j].recorrido==0){
+					Node nodo=new Node(j,tabla.arr[j].n, aux);
+					aux = nodo;
+					tabla.arr[j].recorrido=1;
+					break; //jejeje
+				}
+			}			
 		}
 		TreeUtil arbol = Lista_Arbol.crearArbolHuffman(aux);
 		StringBuffer sb = new StringBuffer();
@@ -66,11 +74,15 @@ public class Huffman
 		while( x!=null )
 		{
 			tabla.arr[x.getC()].cod = sb;
+			System.out.println(x.getC()+": "+tabla.arr[x.getC()].cod+": "+tabla.arr[x.getC()].n);
 			// siguiente hoja
 			x = arbol.next(sb);
 		}
-		BitWriter archivoHuff = new BitWriter(filename+ ".huff");
-		archivoHuff.grabarArchivo(tabla, filename);
+		//int index = filename.indexOf("."); 
+	    //String filenameOriginal=filename.substring(0, index);  
+		//BitWriter archivoHuff = new BitWriter(filenameOriginal+ ".huf");
+		BitWriter archivoHuff = new BitWriter(filename+ ".huf");
+		archivoHuff.grabarArchivo(tabla, filename);								//revisar -> Esta Ok aparentenmente (quizas falta byte separador)
 	}
 	
 	public static void descomprimir(String filename)
@@ -81,12 +93,13 @@ public class Huffman
 		BitReader archivoHuff = new BitReader(filename);
 
 		// leo el archivo y genero el arbol
-		TreeUtil arbol = archivoHuff.cargarArchivo();
-
+		TreeUtil arbol = archivoHuff.cargarArchivo();		//revisar -> Revisado (no recorre el arbol para asignarle los codigos huff a la tabla) (la tabla ya los tiene)
+			
 		// recupera el archivo original
-		int index = filename.indexOf("."); 
+		int index = filename.lastIndexOf("."); 
 	    String filenameOriginal=filename.substring(0, index);  
-		BitWriter archivo = new BitWriter(filenameOriginal);
-		archivo.restaurar(arbol, filename);
+		//BitWriter archivo = new BitWriter(filenameOriginal);
+	    BitWriter archivo = new BitWriter("Descomprimido_"+filenameOriginal);
+		archivo.restaurar(arbol, filename);										//revisar //ver comentario anterior
 	}
 }
