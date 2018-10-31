@@ -18,7 +18,8 @@ public class BitReader
 	{
 		public Integer n = 0;
 		public StringBuffer cod;
-		public Integer recorrido = 0;
+		public Code codigo = new Code();
+		public int recorrido = 0;
 	}
 	
 	public class Table
@@ -33,6 +34,53 @@ public class BitReader
 			}
 		}
 
+	}
+	
+	public class Code
+	{
+		/**
+		 * Retorna el i-esimo bit (1 o 0) de este codigo Huffman.
+		 * @param i Es el i-esimo bit del codigo, contando de izquierda a derecha entre 0 y 127
+		 * @return El i-esimo bit (1 o 0) de este codigo Huffman (contando desde la izquierda)
+		 */
+		
+		int arr[] = new int[128];
+		int len = 0;
+		
+		public int getBitAt(int i)
+		{
+			return arr[i];
+		}
+		
+		/**
+		 * Retorna la longitud de este codigo Huffman (la cantidad de digitos binarios).
+		 * @return La longitud del codigo Huffman
+		 */
+		public int getLength()
+		{
+			return len;
+		}
+		
+		/**
+		 * Inicializa codigo Huffman tomando los caracteres de la cadena sCod 
+		 * que deben ser "ceros" o "unos". 
+		 * @param strBuffCodigo Es la cadena compuesta de "ceros" y "unos" con los que se debe inicializar este codigo
+		 */
+		public void stringToArray(String strBuffCodigo)
+		{	
+			for (int i=0;i<strBuffCodigo.length();i++)
+			{
+				if (strBuffCodigo.charAt(i) == 48)
+				{
+					arr[i] = 0;
+				}
+				else
+				{
+					arr[i] = 1;
+				}
+			}
+			len = strBuffCodigo.length();
+		}
 	}
 	
 	public BitReader(String filename)
@@ -74,22 +122,29 @@ public class BitReader
 			try
 			{
 				//Cargo la tabla:	
-				int c, nCod; 
+				int c, nCod;
+				//StringBuffer sb = new StringBuffer();
 				c = raf.read(); 		//Leo que caracter es.
-				
-				while (c>=0)
+				System.out.println("caracter: "+c);		
+				while (c>=0 && c<255)
 				{	
-					tabla.arr[c].n++;
+					//tabla.arr[c].n++;
 					nCod = raf.read(); 	//Leo la longitud del codigo.
-											
+					tabla.arr[c].codigo.len = nCod;
+					System.out.println("longitud: "+nCod);											
+					tabla.arr[c].n = raf.read(); 	//Leo la cantidad de veces que aparece el caracter
+					System.out.println("cantidad de veces: "+tabla.arr[c].n);
 					for(int j=0; j<nCod; j++)
 					{						
 						//Leo el codigo bit a bit.
-						readBit();						//Largo de codigo es para la cantidad de veces a concatenar	//Falta poner el codigo en la tabla
-						tabla.arr[c].cod.append(sBuffer); //Grabo el codigo Huffman en la tabla
-						sBuffer="";
+						tabla.arr[c].codigo.arr[j]=readBit();		//Largo de codigo es para la cantidad de veces a concatenar	//Falta poner el codigo en la tabla
+						//sb.append(sBuffer);
+						//if(tabla.arr[c].cod==null) tabla.arr[c].cod.delete(0, tabla.arr[c].cod.length());
+						//tabla.arr[c].cod.append(sBuffer); //Grabo el codigo Huffman en la tabla
+						//sBuffer="";
 					}	
 					//tabla.arr[c].cod.append(sBuffer); //Grabo el codigo Huffman en la tabla
+					//tabla.arr[c].cod=sb; //Grabo el codigo Huffman en la tabla
 					if (nCod%8 != 0)
 					{
 						for(int j=nCod;j<(1+nCod/8)*8;j++) //Completo la lectura del byte antes de leer el otro caracter.
@@ -97,31 +152,10 @@ public class BitReader
 							readBit();
 						}
 					}
-					c = raf.read();			//Leo caracter siguiente.					
-				}			
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
-			//close();
-			
-			//Creo lista:
-			/*SortedList<Integer> lista = new SortedList<>();
-			Comparator<Integer> cmp = new CmpInteger();
-			for (int i=0;i<256;i++)
-			{
-				if(tabla.arr[i].n>0)
-					lista.add(i,cmp);
-			}
-			Node aux=null;
-			for(int i=lista.size()-1;i>=0; i--)
-			{
-				int x = lista.get(i);
-				Node nodo=new Node(x,tabla.arr[i].n, aux);
-				aux = nodo;
-			}*/
+					c = raf.read();			//Leo caracter siguiente.		
+					System.out.println("caracterS: "+c);
+				}
+
 			SortedList<Integer> lista = new SortedList<>();
 			Comparator<Integer> cmp = new CmpInteger();
 			for (int i=0;i<256;i++)
@@ -138,6 +172,7 @@ public class BitReader
 				{
 					if(tabla.arr[j].n==x && tabla.arr[j].recorrido==0){
 						Node nodo=new Node(j,tabla.arr[j].n, aux);
+						System.out.println(j+": "+tabla.arr[j].n+": "+tabla.arr[j].codigo.len);
 						aux = nodo;
 						tabla.arr[j].recorrido=1;
 						break; //jejeje
@@ -147,8 +182,14 @@ public class BitReader
 			
 			//Armo arbol:
 			TreeUtil arbol = Lista_Arbol.crearArbolHuffman(aux);			
-			
+			close();
 			return arbol;
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -161,6 +202,14 @@ public class BitReader
 		}
 		
 		return x;
+	}
+	public void posicionarPunteroEnArchivo (long pos){
+		try {
+			raf.seek(pos);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public int readBit() //revisar //revisado
@@ -175,8 +224,10 @@ public class BitReader
 				if( b>=0 )
 				{
 					sBuffer = Integer.toBinaryString(b);
+					//System.out.println("Codigo: "+sBuffer);									//CONSOLA
 					String ret=replicate(8-sBuffer.length(),'0')+sBuffer;
 					sBuffer=ret.substring(0,8);
+					System.out.println("CodigoB: "+sBuffer);									//CONSOLA
 					bitNo=0;
 				}
 				else

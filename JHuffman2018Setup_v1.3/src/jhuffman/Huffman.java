@@ -74,6 +74,7 @@ public class Huffman
 		while( x!=null )
 		{
 			tabla.arr[x.getC()].cod = sb;
+			tabla.arr[x.getC()].codigo.stringToArray(sb.toString());
 			System.out.println(x.getC()+": "+tabla.arr[x.getC()].cod+": "+tabla.arr[x.getC()].n);
 			// siguiente hoja
 			x = arbol.next(sb);
@@ -91,7 +92,6 @@ public class Huffman
 		//Decodificación (descompresión)
 		// abro el archivo Huffman
 		BitReader archivoHuff = new BitReader(filename);
-
 		// leo el archivo y genero el arbol
 		TreeUtil arbol = archivoHuff.cargarArchivo();		//revisar -> Revisado (no recorre el arbol para asignarle los codigos huff a la tabla) (la tabla ya los tiene)
 			
