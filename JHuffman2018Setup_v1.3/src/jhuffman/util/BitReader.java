@@ -38,12 +38,7 @@ public class BitReader
 	
 	public class Code
 	{
-		/**
-		 * Retorna el i-esimo bit (1 o 0) de este codigo Huffman.
-		 * @param i Es el i-esimo bit del codigo, contando de izquierda a derecha entre 0 y 127
-		 * @return El i-esimo bit (1 o 0) de este codigo Huffman (contando desde la izquierda)
-		 */
-		
+			
 		int arr[] = new int[128];
 		int len = 0;
 		
@@ -52,20 +47,11 @@ public class BitReader
 			return arr[i];
 		}
 		
-		/**
-		 * Retorna la longitud de este codigo Huffman (la cantidad de digitos binarios).
-		 * @return La longitud del codigo Huffman
-		 */
 		public int getLength()
 		{
 			return len;
 		}
 		
-		/**
-		 * Inicializa codigo Huffman tomando los caracteres de la cadena sCod 
-		 * que deben ser "ceros" o "unos". 
-		 * @param strBuffCodigo Es la cadena compuesta de "ceros" y "unos" con los que se debe inicializar este codigo
-		 */
 		public void stringToArray(String strBuffCodigo)
 		{	
 			for (int i=0;i<strBuffCodigo.length();i++)
@@ -138,13 +124,8 @@ public class BitReader
 					{						
 						//Leo el codigo bit a bit.
 						tabla.arr[c].codigo.arr[j]=readBit();		//Largo de codigo es para la cantidad de veces a concatenar	//Falta poner el codigo en la tabla
-						//sb.append(sBuffer);
-						//if(tabla.arr[c].cod==null) tabla.arr[c].cod.delete(0, tabla.arr[c].cod.length());
-						//tabla.arr[c].cod.append(sBuffer); //Grabo el codigo Huffman en la tabla
-						//sBuffer="";
 					}	
-					//tabla.arr[c].cod.append(sBuffer); //Grabo el codigo Huffman en la tabla
-					//tabla.arr[c].cod=sb; //Grabo el codigo Huffman en la tabla
+
 					if (nCod%8 != 0)
 					{
 						for(int j=nCod;j<(1+nCod/8)*8;j++) //Completo la lectura del byte antes de leer el otro caracter.
