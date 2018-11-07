@@ -34,21 +34,18 @@ public class BitWriter
 				if(tabla.arr[i].n>0)
 				{
 					raf.write(i); 		//Grabo el caracter.
-					System.out.println("caracter: "+i);																							//CONSOLA
-					//int nCod = tabla.arr[i].cod.length(); 							
+					System.out.println("caracter: "+i);																							
 					int nCod = tabla.arr[i].codigo.len;
 					raf.write(nCod); 	// Grabo la longitud del codigo.
-					System.out.println("largo codigo: "+tabla.arr[i].codigo.len);																//CONSOLA
+					System.out.println("largo codigo: "+tabla.arr[i].codigo.len);										
 					raf.write(tabla.arr[i].n); 	// Grabo la cantidad de veces que aparece el caracter.
-					System.out.println("cantidad de veces: "+tabla.arr[i].n);																//CONSOLA
+					System.out.println("cantidad de veces: "+tabla.arr[i].n);											
 					for(int j=0; j<nCod; j++)
 					{
-						//writeBit(tabla.arr[i].cod.codePointAt(j)); 	//Grabo el codigo bit a bit.
 						writeBit(tabla.arr[i].codigo.arr[j]); 	//Grabo el codigo bit a bit.
 						System.out.println(tabla.arr[i].codigo.arr[j]);	
 					}	
 					flush(); //Completo el byte con ceros. (Como tenes la longitud del codigo, estos '0' extras no generan conflicto)
-					//aca deberia ir el byte separador pero cual seria?
 				}
 			}
 			raf2 = new RandomAccessFile(filename, "r");
@@ -57,17 +54,15 @@ public class BitWriter
 			int c = raf2.read();
 			while (c>=0)
 			{			
-				//for(int i=0; i<tabla.arr[c].cod.length(); i++)
 				for(int i=0; i<tabla.arr[c].codigo.len; i++)
 				{
-					//writeBit(tabla.arr[c].cod.codePointAt(i)); 	//Grabo el codigo bit a bit.
 					writeBit(tabla.arr[c].codigo.arr[i]); 	//Grabo el codigo bit a bit.
-					System.out.println(tabla.arr[c].codigo.arr[i]);																				//CONSOLA
+					System.out.println(tabla.arr[c].codigo.arr[i]);																			
 				}			
 				
 				c = raf2.read();
 			}
-			flush();  //No genera conflicto porque se reserva el tamaño del archivo original? o del codigo de huff?
+			flush();  
 			close();
 		}
 		catch(Exception e)
@@ -81,7 +76,6 @@ public class BitWriter
 		// TODO Auto-generated method stub
 		try
 		{
-			//BitReader archivo = new BitReader(filename);
 			raf2 = new RandomAccessFile(filename, "r");
 			System.out.println("+++++++++++++++++++++++++++++++++++++");	
 			int c = 0;
@@ -89,14 +83,11 @@ public class BitWriter
 			long longitudArchivoOriginal = raf2.readLong();
 			System.out.println("Longitud archivo: "+longitudArchivoOriginal);
 			
-			//archivo.posicionarPunteroEnArchivo(longitudArchivoOriginal);
 			Node nodo = arbol.raiz;			
 			for (long l=0; l<longitudArchivoOriginal; l++)
-			//for (long l=0; l<20; l++)
 			{
 				while (nodo.getIzq()!=null || nodo.getDer()!=null)
 				{
-					//int bit = archivo.readBit();
 					int bit = readBitRAF2();
 					if (bit==0)			
 					{
@@ -112,7 +103,6 @@ public class BitWriter
 				nodo = arbol.raiz;
 			}		
 			close();
-			//archivo.close();
 		}
 		catch(Exception e)
 		{
@@ -133,7 +123,7 @@ public class BitWriter
 			{
 				int x = Integer.parseInt(sBuffer, 2);
 				raf.write(x);
-				System.out.println("codigo: "+x);																				//CONSOLA
+				System.out.println("codigo: "+x);														
 				sBuffer="";
 			}
 		}
@@ -144,22 +134,22 @@ public class BitWriter
 		}
 	}
 	
-	public int readBit() //revisar //revisado
+	public int readBit() 
 	{
 		// programar aqui
 		try
 		{
-			if( sBuffer.length()==0 || bitNo==8 )							//problema en segunda leida //corregido //NO TOCAR, se usa en BitWRITER.restaurar
+			if( sBuffer.length()==0 || bitNo==8 )							
 			{
 				int b=raf.read();
-				System.out.println("Lectura: "+b);									//CONSOLA
+				System.out.println("Lectura: "+b);								
 				if( b>=0 )
 				{
 					sBuffer = Integer.toBinaryString(b);
-					System.out.println("Codigo: "+sBuffer);									//CONSOLA
+					System.out.println("Codigo: "+sBuffer);							
 					String ret=replicate(8-sBuffer.length(),'0')+sBuffer;
 					sBuffer=ret.substring(0,8);
-					System.out.println("CodigoB: "+sBuffer);									//CONSOLA
+					System.out.println("CodigoB: "+sBuffer);						
 					bitNo=0;
 				}
 				else
@@ -177,22 +167,20 @@ public class BitWriter
 		}
 	}
 	
-	public int readBitRAF2() //revisar //revisado
+	public int readBitRAF2() 
 	{
 		// programar aqui
 		try
 		{
-			if( sBuffer.length()==0 || bitNo==8 )							//problema en segunda leida //corregido //NO TOCAR, se usa en BitWRITER.restaurar
+			if( sBuffer.length()==0 || bitNo==8 )					
 			{
 				int b=raf2.read();
 				
 				if( b>=0 )
 				{
-					sBuffer = Integer.toBinaryString(b);
-					//System.out.println("Codigo: "+sBuffer);									//CONSOLA
+					sBuffer = Integer.toBinaryString(b);				
 					String ret=replicate(8-sBuffer.length(),'0')+sBuffer;
-					sBuffer=ret.substring(0,8);
-					//System.out.println("CodigoB: "+sBuffer);									//CONSOLA
+					sBuffer=ret.substring(0,8);		
 					bitNo=0;
 				}
 				else

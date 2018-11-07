@@ -90,31 +90,26 @@ public class BitReader
 				tabla.arr[c].n++;
 				c = raf.read();
 			}
-			//raf.close();
 		}
 		catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		//close();
 		return tabla;
 	}
 	
 	public TreeUtil cargarArchivo() {
 		// TODO Auto-generated method stub
 		{
-			//Table tabla = crearTabla();
 			Table tabla = new Table();
 			try
 			{
 				//Cargo la tabla:	
 				int c, nCod;
-				//StringBuffer sb = new StringBuffer();
 				c = raf.read(); 		//Leo que caracter es.
 				System.out.println("caracter: "+c);		
 				while (c>=0 && c<255)
 				{	
-					//tabla.arr[c].n++;
 					nCod = raf.read(); 	//Leo la longitud del codigo.
 					tabla.arr[c].codigo.len = nCod;
 					System.out.println("longitud: "+nCod);											
@@ -193,22 +188,21 @@ public class BitReader
 		}
 	}
 	
-	public int readBit() //revisar //revisado
+	public int readBit() 
 	{
 		// programar aqui
 		try
 		{
-			if( sBuffer.length()==0 || bitNo==8 )							//problema en segunda leida //corregido //NO TOCAR, se usa en BitWRITER.restaurar
+			if( sBuffer.length()==0 || bitNo==8 )					
 			{
 				int b=raf.read();
 				
 				if( b>=0 )
 				{
-					sBuffer = Integer.toBinaryString(b);
-					//System.out.println("Codigo: "+sBuffer);									//CONSOLA
+					sBuffer = Integer.toBinaryString(b);			
 					String ret=replicate(8-sBuffer.length(),'0')+sBuffer;
 					sBuffer=ret.substring(0,8);
-					System.out.println("CodigoB: "+sBuffer);									//CONSOLA
+					System.out.println("CodigoB: "+sBuffer);				
 					bitNo=0;
 				}
 				else

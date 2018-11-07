@@ -83,7 +83,7 @@ public class Huffman
 	    //String filenameOriginal=filename.substring(0, index);  
 		//BitWriter archivoHuff = new BitWriter(filenameOriginal+ ".huf");
 		BitWriter archivoHuff = new BitWriter(filename+ ".huf");
-		archivoHuff.grabarArchivo(tabla, filename);								//revisar -> Esta Ok aparentenmente (quizas falta byte separador)
+		archivoHuff.grabarArchivo(tabla, filename);							
 	}
 	
 	public static void descomprimir(String filename)
@@ -93,13 +93,13 @@ public class Huffman
 		// abro el archivo Huffman
 		BitReader archivoHuff = new BitReader(filename);
 		// leo el archivo y genero el arbol
-		TreeUtil arbol = archivoHuff.cargarArchivo();		//revisar -> Revisado (no recorre el arbol para asignarle los codigos huff a la tabla) (la tabla ya los tiene)
+		TreeUtil arbol = archivoHuff.cargarArchivo();		
 			
 		// recupera el archivo original
 		int index = filename.lastIndexOf("."); 
 	    String filenameOriginal=filename.substring(0, index);  
 		//BitWriter archivo = new BitWriter(filenameOriginal);
-	    BitWriter archivo = new BitWriter("Descomprimido_"+filenameOriginal);
-		archivo.restaurar(arbol, filename);										//revisar //ver comentario anterior
+	    BitWriter archivo = new BitWriter("Descomprimido_"+filenameOriginal); // Para mostrar que el descompresor anda correctamente
+		archivo.restaurar(arbol, filename);										
 	}
 }
